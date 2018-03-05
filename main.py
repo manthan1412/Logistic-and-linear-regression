@@ -31,10 +31,13 @@ def linear_regression(data=None):
 	w_opt = lr.W_opt()
 	print(lr)
 
+def logistic_regression(data=None, eta=0.002, iterations=7000):
+	lr = LoR(data=data, eta=eta, iterations=iterations)
+
 if __name__ == "__main__":
 	promissed_data, classification_data = read_classification_data('classification.txt')
 	# perceptron_learning(promissed_data, 0.001)
-	pocket_algorithm(classification_data, 0.1, 700)
+	# pocket_algorithm(classification_data, 0.1, 7000)
 	# print(promissed_data)
 	# print(classification_data)
 	# pl = PL(data=promissed_data, alpha=0.001)
@@ -47,5 +50,5 @@ if __name__ == "__main__":
 				row = list(map(float, line.strip().split(',')))
 				regression_data.append(row)
 	# print(regression_data)
-	linear_regression(regression_data)
-
+	# linear_regression(regression_data)
+	logistic_regression(classification_data, 0.02, 700)
