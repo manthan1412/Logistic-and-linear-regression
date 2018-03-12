@@ -34,6 +34,7 @@ class LogisticRegression(object):
 
 	def __init_W(self):
 		self.__W = randn(self.__dim)
+		# print(self.__W)
 
 
 	def __regression(self):
@@ -58,5 +59,17 @@ class LogisticRegression(object):
 			# print(self.__W)
 			self.__W -= self.__eta*dw
 			# print(self.__W)
-			break
+			# break
 
+		# with open('regression.txt', 'w') as f:
+		# 	f.write(str(self.__W.tolist()) + "\n")
+
+	def weights(self):
+		return self.__W.tolist()
+
+	def accuracy(self):
+		predicted = []
+		for i in range(self.__N):
+			predicted.append(np.sign(self.__W.dot(self._numpy_data[:, i])))
+		accuracy = (np.array(predicted) == self._y)
+		return str(accuracy.mean()*100.0)+"%"

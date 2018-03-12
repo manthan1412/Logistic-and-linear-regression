@@ -22,6 +22,7 @@ class LinearClassification(object):
 		self._numpy_data = np.array([[] for _ in range(self.__dim)])
 		self._target = []
 		self.__N = len(self.__data)
+		self._N = self.__N
 		for x in self.__data:
 			x.insert(0, 1.0)
 			self._numpy_data = np.c_[ self._numpy_data, np.array(x[:-1]) ]
@@ -30,9 +31,9 @@ class LinearClassification(object):
 		# print(self._target)
 		self._target = np.array(self._target)
 		self.__lowest = len(data)
-		self.__init_W()
+		self._init_W()
 
-	def __init_W(self):
+	def _init_W(self):
 		self._W = randn(self.__dim)
 		# print(self._W)
 
@@ -53,10 +54,10 @@ class LinearClassification(object):
 		# print(index)
 		# print(self._numpy_data[:, index])
 		if predicted[index] == 1.0:
-			print(len(violated_indices[0]), "-")
+			# print(len(violated_indices[0]), "-")
 			self._W -= self._alpha*self._numpy_data[:, index]
 		else:
-			print(len(violated_indices[0]), "+")
+			# print(len(violated_indices[0]), "+")
 			self._W += self._alpha*self._numpy_data[:, index]
 		# print(self._W)
 		return True, len(violated_indices[0])
@@ -70,6 +71,16 @@ class LinearClassification(object):
 
 	def _get_data(self):
 		return self.__data
+
+	def weights(self):
+		return self._W.tolist()
+
+	def accuracy(self):
+		predicted = []
+		for i in range(self._N):
+			predicted.append(np.sign(self._W.dot(self._numpy_data[:, i])))
+		accuracy = (predicted == self._target)
+		return str(accuracy.mean()*100.0)+"%"
 
 
 class PerceptronLearning(LinearClassification):
@@ -85,12 +96,16 @@ class PerceptronLearning(LinearClassification):
 		while updated:
 			self.__predicted = self._next_iteration()
 			updated, missclassified = self._update_W(np.array(self.__predicted))
-			print(i)
+			# print(i)
 			i+=1
-		print(self._W)
-		with open('temp.txt', 'a') as f:
-			f.write(str(self._W.tolist()) + "\n")
+			if i > 7000:
+				self._init_W()
+				i = 1
+		# print(self._W)
+		# with open('temp.txt', 'a') as f:
+		# 	f.write(str(self._W.tolist()) + "\n")
 
+	
 
 class PocketAlgorithm(LinearClassification):
 
@@ -110,10 +125,20 @@ class PocketAlgorithm(LinearClassification):
 			if self.__lowest_missclassified > missclassified:
 				self.__lowest_missclassified = missclassified
 				self.__best_W = self._W
-			print(i)
+			# print(i)
 		# print(self._W)
-		with open('pocket.txt', 'a') as f:
-			f.write(str(self.__best_W.tolist()) + "\n" + str(self.__lowest_missclassified) + "\n")
+		# with open('pocket.txt', 'a') as f:
+		# 	f.write(str(self.__best_W.tolist()) + "\n" + str(self.__lowest_missclassified) + "\n")
+
+	def weights(self):
+		return self.__best_W.tolist()
+
+	def accuracy(self):
+		predicted = []
+		for i in range(self._N):
+			predicted.append(np.sign(self.__best_W.dot(self._numpy_data[:, i])))
+		accuracy = (predicted == self._target)
+		return str(accuracy.mean()*100.0)+"%"
 
 
 	def plot(self):
